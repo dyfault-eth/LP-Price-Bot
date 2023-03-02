@@ -10,6 +10,7 @@ const LPFlagMaticContract = "0xcFe88814f8ef4BcEFeB4483046B7229511E8AA06"
 const LPFlagEthContract = "0x30D50b36bE1Fe4BD1D78553F77937cAaBad37F7f"
 const LPMaticETHContract = "0xc4e595acDD7d12feC385E5dA5D43160e8A0bAC0E"
 const LPEthZedContract = "0x374552804F7CA26C307c8D31f4cC0d9215C87f46"
+const zedContract = "0x5ec03c1f7fa7ff05ec476d19e34a22eddb48acdc"
 
 setInterval(async function() {
 
@@ -23,7 +24,7 @@ setInterval(async function() {
 
     let fulldate = `${day}/${month}/${year} ${hour}:${minute}:${second}`
 
-    if (fulldate === `${day}/${month}/${year} 0:0:0`) {
+    if (fulldate === `${day}/${month}/${year} 19:43:0`) {
 
 
         // get token prices
@@ -73,5 +74,34 @@ setInterval(async function() {
         let LPEthFlagValue = ((LPEthFlagBalanceResult * nbrflagPrice) * 2 / LPTokenETHFlagTotalSupplyResult)
 
         console.log('lp token weth - flag : ' + LPEthFlagValue + '$');
+
+        // setup WETH contract token
+        let WETHtokenContract = new web3.eth.Contract(ERC20ABI, wethaddress)
+
+        // setup LP Token MATIC - WETH contract
+        let LPTokenETHMaticContract = new web3.eth.Contract(ERC20ABI, LPMaticETHContract);
+        let LPTokenEthMaticBalance = await WETHtokenContract.methods.balanceOf(LPMaticETHContract).call();
+        let LPTokenEthMaticBalanceResult = web3.utils.fromWei(LPTokenEthMaticBalance, 'ether');
+
+        // get LP Token price
+        let LPTokenEthMaticTotalSupply = await LPTokenETHMaticContract.methods.totalSupply().call();
+        let LPTokenEthMaticTotalSupplyResult = web3.utils.fromWei(LPTokenEthMaticTotalSupply, 'ether');
+        let LPEthMaticValue = ((LPTokenEthMaticBalanceResult * nbrEthPrice) * 2 / LPTokenEthMaticTotalSupplyResult)
+
+        console.log('lp token weth - matic : ' + LPEthMaticValue + '$')
+
+        // setup LP token WETH - ZED contract
+        let LPTokenETHZEDContract = new web3.eth.Contract(ERC20ABI, LPEthZedContract)
+
+        // get WETH balance in LP WETH - ZED contract
+        let LPTokenETHZEDBalance = await WETHtokenContract.methods.balanceOf(LPEthZedContract).call();
+        let LPTokenETHZEDBalanceResult = web3.utils.fromWei(LPTokenETHZEDBalance, 'ether');
+
+        // get LP Token price
+        let LPTokenETHZEDTotalSupply = await LPTokenETHZEDContract.methods.totalSupply().call()
+        let LPTokenETHZEDTotalSupplyResult = web3.utils.fromWei(LPTokenETHZEDTotalSupply, 'ether')
+        let LPEthZedValue = ((LPTokenETHZEDBalanceResult * nbrEthPrice) * 2 / LPTokenETHZEDTotalSupplyResult)
+
+        console.log('lp token weth - zed : ' + LPEthZedValue + '$')
     }
 }, 1000);
