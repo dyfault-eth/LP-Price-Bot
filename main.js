@@ -23,10 +23,10 @@ setInterval(async function() {
 
     let fulldate = `${day}/${month}/${year} ${hour}:${minute}:${second}`
 
-    if (fulldate === `${day}/${month}/${year} 18:25:0`) {
+    if (fulldate === `${day}/${month}/${year} 0:0:0`) {
 
 
-        // get prices
+        // get token prices
         let maticPrice = await coingeckoclient.simple.price({
             ids: ['matic-network'],
             vs_currencies: ['usd']
@@ -42,19 +42,36 @@ setInterval(async function() {
             vs_currencies: ['usd']
         })
 
+        // setup token prices
         let nbrflagPrice = flagPrice['data']['for-loot-and-glory']['usd']
         let nbrEthPrice = ethPrice['data']['ethereum']['usd']
         let nbrMaticPrice = maticPrice['data']['matic-network']['usd']
 
+        // setup FLAG contract token
         let FLAGtokenContract = new web3.eth.Contract(ERC20ABI, flagAddress)
+
+        // setup LP Token FLAG - MATIC contract
         let LPTokenMaticFlagContract = new web3.eth.Contract(ERC20ABI, LPFlagMaticContract)
         let LPMaticFlagBalance = await FLAGtokenContract.methods.balanceOf(LPFlagMaticContract).call();
         let LPMaticFlagBalanceResult = web3.utils.fromWei(LPMaticFlagBalance, 'ether');
 
+        // get LP Token price
         let LPTokenMaticFlagTotalSupply = await LPTokenMaticFlagContract.methods.totalSupply().call();
         let LPTokenMaticFlagTotalSupplyResult = web3.utils.fromWei(LPTokenMaticFlagTotalSupply, 'ether');
         let LPMaticFlagValue = ((LPMaticFlagBalanceResult * nbrflagPrice) * 2) / LPTokenMaticFlagTotalSupplyResult
 
-        console.log(LPMaticFlagValue)
+        console.log('lp token matic - flag : ' + LPMaticFlagValue + '$')
+
+        // setup LP Token FLAG - WETH contract
+        let LPTokenETHFlagContract = new web3.eth.Contract(ERC20ABI, LPFlagEthContract)
+        let LPEthFlagBalance = await FLAGtokenContract.methods.balanceOf(LPFlagEthContract).call();
+        let LPEthFlagBalanceResult = web3.utils.fromWei(LPEthFlagBalance, 'ether');
+
+        // get LP Token price
+        let LPTokenETHFlagTotalSupply = await LPTokenETHFlagContract.methods.totalSupply().call();
+        let LPTokenETHFlagTotalSupplyResult = web3.utils.fromWei(LPTokenETHFlagTotalSupply, 'ether');
+        let LPEthFlagValue = ((LPEthFlagBalanceResult * nbrflagPrice) * 2 / LPTokenETHFlagTotalSupplyResult)
+
+        console.log('lp token weth - flag : ' + LPEthFlagValue + '$');
     }
 }, 1000);
