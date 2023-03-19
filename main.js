@@ -10,7 +10,6 @@ const LPFlagMaticContract = "0xcFe88814f8ef4BcEFeB4483046B7229511E8AA06"
 const LPFlagEthContract = "0x30D50b36bE1Fe4BD1D78553F77937cAaBad37F7f"
 const LPMaticETHContract = "0xc4e595acDD7d12feC385E5dA5D43160e8A0bAC0E"
 const LPEthZedContract = "0x374552804F7CA26C307c8D31f4cC0d9215C87f46"
-const zedContract = "0x5ec03c1f7fa7ff05ec476d19e34a22eddb48acdc"
 
 setInterval(async function() {
 
@@ -24,15 +23,10 @@ setInterval(async function() {
 
     let fulldate = `${day}/${month}/${year} ${hour}:${minute}:${second}`
 
-    if (fulldate === `${day}/${month}/${year} 19:43:0`) {
+    if (fulldate === `${day}/${month}/${year} 0:0:0`) {
 
 
         // get token prices
-        let maticPrice = await coingeckoclient.simple.price({
-            ids: ['matic-network'],
-            vs_currencies: ['usd']
-        })
-
         let flagPrice = await coingeckoclient.simple.price({
             ids: ['for-loot-and-glory'],
             vs_currencies: ['usd']
@@ -46,7 +40,6 @@ setInterval(async function() {
         // setup token prices
         let nbrflagPrice = flagPrice['data']['for-loot-and-glory']['usd']
         let nbrEthPrice = ethPrice['data']['ethereum']['usd']
-        let nbrMaticPrice = maticPrice['data']['matic-network']['usd']
 
         // setup FLAG contract token
         let FLAGtokenContract = new web3.eth.Contract(ERC20ABI, flagAddress)
